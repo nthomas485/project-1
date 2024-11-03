@@ -8,24 +8,32 @@ import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
  * @demo index.html
  * @element page-card
  */
-export class page-card extends DDDSuper(I18NMixin(LitElement)) {
-    constructor() {
-        super();
-        this.title = '';
-        this.source = '';
-        this.owner = "";
-      }
-    
-      static get properties() {
-        return {
-            source: { type: String },
-            title: { type: String },
-            owner: { type: String },
-        };
-      }
-    
-      static get styles() {
-        return [css`
+export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
+  constructor() {
+    super();
+    this.title = '';
+    this.source = '';
+    this.owner = "";
+    this.slug = "";
+    this.description = "";
+    this.lastUpdated = "";
+  }
+
+  static get properties() {
+    return {
+      source: { type: String },
+      title: { type: String },
+      lastUpdated: { type: String },
+      description: { type: String },
+      content: { type: String },
+      ability: { type: String },
+      slug: { type: String },
+
+    };
+  }
+
+  static get styles() {
+    return [css`
         
     
         .image {
@@ -62,18 +70,25 @@ export class page-card extends DDDSuper(I18NMixin(LitElement)) {
     }
     
         `];
-      }
-    
-      render() {
-        return html`
+  }
+
+  render() {
+    return html`
         <a class="image" href="${this.source}" target="_blank">
         <img src="${this.source}" alt="${this.title}"/>
             <div>${this.title}</div>
             <div id="secondaryCreator">${this.owner}</div>
       </a>
         `;
-      }
-      static get tag() {
-        return "page-card";
-      }
-    }
+  }
+  static get tag() {
+    return "page-card";
+  }
+  static get haxProperties() {
+    return new URL(`./lib/${this.tag}.haxProperties.json`, import.meta.url)
+      .href;
+  }
+}
+
+globalThis.customElements.define(pageCard.tag, pageCard);
+
