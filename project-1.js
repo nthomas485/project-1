@@ -27,8 +27,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.logo = "";
     this.theme = "";
     this.created = "";
-    this.lastUpdate = "";
+    this.lastUpdated = "";
     this.items = [];
+    this.url = "https://haxtheweb.org/site.json"
   }
 
   // Lit reactive properties
@@ -97,14 +98,25 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     <div class="output">
       ${this.items.map((item, index) => html`
         <page-card
-        source="${item.href}"
         title="${item.title}"
+        logo="https://haxtheweb.org/${item.metadata.images[0]}"
+        lastUpdated="Updated: ${this.dated(item.metadata.updated)}"
         description="${item.description}"
-        slug="${item.slug}"
+        slug="https://haxtheweb.org/${item.slug}"
+        source="https://haxtheweb.org/${item.location}"
+        created= "created: ${this.dated(item.metadata.created)}"
         ></page-card>
         `)}
     </div> 
+    <div class="overview">
+      
+    </div>
 </div>`;
+  }
+
+  dated(value){
+    var date = new Date(value * 1000);
+    return (date.toUTCString());
   }
 
   inputChanged(e) {
@@ -114,18 +126,19 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   updated(changedProperties) {
 
     // see if value changes from user input and is not empty
-    this.updateResults("https://haxtheweb.org/site.json");
+
   }
   updateResults(value) {
+    this.value = this.shadowRoot.querySelector('#text-box').value;
     this.loading = true;
-    fetch("https://haxtheweb.org/site.json").then(d => d.ok ? d.json() : {}).then(data => {
-      console.log("greetings")
+    fetch(this.value).then(d => d.ok ? d.json() : {}).then(data => {
 
       this.items = data.items;
       this.loading = false;
-
+      console.log(data)
     });
   }
+
 
   /**
    * haxProperties integration via file reference

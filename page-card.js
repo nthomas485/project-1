@@ -17,6 +17,8 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
     this.slug = "";
     this.description = "";
     this.lastUpdated = "";
+    this.image = '';
+    this.created = '';
   }
 
   static get properties() {
@@ -26,16 +28,24 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
       lastUpdated: { type: String },
       description: { type: String },
       content: { type: String },
-      ability: { type: String },
       slug: { type: String },
-
+      image: { type: String },
+      created: { type: String },
     };
   }
 
   static get styles() {
     return [css`
-        
-    
+
+        .wrapper{
+          height: 360px;
+          width: 300px;
+          display: inline-table;
+          border:var(--ddd-border-lg);
+          border-radius: var(--ddd-radius-xl);
+          padding: var(--ddd-spacing-2); 
+          //box-sizing: border-box; 
+        }
         .image {
         display: inline-block;
         }
@@ -74,11 +84,16 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
 
   render() {
     return html`
-        <a class="image" href="${this.source}" target="_blank">
-        <img src="${this.source}" alt="${this.title}"/>
+        <div class="wrapper">
+         <img class="image" href="${this.image}"> 
             <div>${this.title}</div>
-            <div id="secondaryCreator">${this.owner}</div>
-      </a>
+            <div id="update"> ${this.lastUpdated}</div> 
+            <div id="description">${this.description}</div>
+            <a id="slug" href="${this.slug}" target="_blank"> slug</a>
+            <a id="source" href="${this.source}" target="_blank"> open source</a>
+            <div id="create"> ${this.created}</div>
+        </div> 
+    
         `;
   }
   static get tag() {
