@@ -29,7 +29,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.created = "";
     this.lastUpdated = "";
     this.items = [];
-    this.url = "https://haxtheweb.org/site.json"
+    this.url = "";
+    this.isValid = false;
+    this.loading = false;
   }
 
   // Lit reactive properties
@@ -44,6 +46,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       created: { type: String },
       lastUpdate: { type: String },
       items: { type: Array },
+      loading: { type: Boolean, reflect: true},
+      url: { type: String, attribute: 'json-url' },
+      isValid: { type: Boolean, reflect: true},
     };
   }
 
@@ -91,22 +96,24 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   <details open>
       <summary>Enter Site URL</summary>
       <div class="inputs">
-        <input type="text" id="text-box" placeholder="Enter a .json site"/>
+        <input type="text" id="text-box" placeholder="https://haxtheweb.org" @input="${this.inputChanged}" @keydown="${(e) => {if(e.key === 'Enter'){this.updateResults();}}}"/>
         <button title="Analyze" id="analyze" @click="${this.updateResults}">Analyze</button>
       </div>
     </details>
     <div class="output">
-      ${this.items.map((item, index) => html`
-        <page-card
-        title="${item.title}"
-        logo="https://haxtheweb.org/${item.metadata.images[0]}"
-        lastUpdated="Updated: ${this.dated(item.metadata.updated)}"
-        description="${item.description}"
-        slug="https://haxtheweb.org/${item.slug}"
-        source="https://haxtheweb.org/${item.location}"
-        created= "created: ${this.dated(item.metadata.created)}"
-        ></page-card>
-        `)}
+      ${this.items.map((item, index) => {
+        const img = item.metadata && item.metadata.files && item.metadata.files[0] ? `https://haxtheweb.org/${item.metadata.files.url}` : '';
+        return html`
+          <page-card
+          title="${item.title}"
+          logo= "${img}"
+          lastUpdated="Updated: ${this.dated(item.metadata.updated)}"
+          description="${item.description}"
+          slug="https://haxtheweb.org/${item.slug}"
+          source="https://haxtheweb.org/${item.location}"
+          created= "created: ${this.dated(item.metadata.created)}"
+          ></page-card>
+        `})}
     </div> 
     <div class="overview">
       
@@ -122,19 +129,52 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   inputChanged(e) {
     this.value = this.shadowRoot.querySelector('#analyze').value;
   }
+  /*Valid(input) {
+    if (!this.url.has('/site.json')) {
+      this.url += '/site.json'
+      this.isValid = true
+    } 
+  } */
 
+    hasImage(item) {
+      let image = item.metadata.images;
+      if (image) {
+        if(image.length > 0) {
+          return (this.url + image[0])
+        }
+      } else {
+        return '';
+      }
+    }
   updated(changedProperties) {
 
     // see if value changes from user input and is not empty
+    if (changedProperties.has('value')) {
+      this.updateResults(this.value);
+    } else if (changedProperties.has('value') && !this.value) {
+      this.items = []
+    }
+    if (changedProperties.has('items') && this.items.length > 0 ) {
+      console.log(this.items);
+    }
 
   }
   updateResults(value) {
+    //const json =  `${this.url}site.json`;
     this.value = this.shadowRoot.querySelector('#text-box').value;
     this.loading = true;
-    fetch(this.value).then(d => d.ok ? d.json() : {}).then(data => {
+    if (!this.value.startsWith('https://') && (!this.value.endsWith('/site.json'))) {
+      this.value = 'https://'+this.value+'/site.json'
+    } else if (!this.value.startsWith('https://')){
+      this.value = 'https://'+this.value
+    } else if (!this.value.endsWith('/site.json')){
+      this.value += '/site.json'
+    }
+    fetch(this.value).then(response => response.ok ? response.json() : {}).then(data => {//fetch(this.value).then(d => d.ok ? d.json() : {}).then(data => {
 
-      this.items = data.items;
+      this.items = [...data.items];
       this.loading = false;
+      this.requestUpdate();
       console.log(data)
     });
   }

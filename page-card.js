@@ -38,12 +38,16 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
     return [css`
 
         .wrapper{
-          height: 360px;
-          width: 300px;
-          display: inline-table;
+          height: 100%;
+          width: 100%;
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          max-width: 312px;
           border:var(--ddd-border-lg);
           border-radius: var(--ddd-radius-xl);
           padding: var(--ddd-spacing-2); 
+          text-decoration: none;
           //box-sizing: border-box; 
         }
         .image {
@@ -85,11 +89,11 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
         <div class="wrapper">
-         <img class="image" href="${this.image}"> 
-            <div>${this.title}</div>
+         <img class="image" src="${this.url}/${this.logo}" alt="${this.title}"> 
+            <a href="${this.slug}" target="_blank">${this.title} </a>
             <div id="update"> ${this.lastUpdated}</div> 
             <div id="description">${this.description}</div>
-            <a id="slug" href="${this.slug}" target="_blank"> slug</a>
+            <!-- <a id="slug" href="${this.slug}" target="_blank"> slug</a> --> 
             <a id="source" href="${this.source}" target="_blank"> open source</a>
             <div id="create"> ${this.created}</div>
         </div> 
