@@ -17,8 +17,12 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
     this.slug = "";
     this.description = "";
     this.lastUpdated = "";
-    this.image = '';
+    this.logo = '';
     this.created = '';
+    this.hex = '';
+    this.theme = '';
+    this.icon = '';
+    this.url = '';
   }
 
   static get properties() {
@@ -29,8 +33,12 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
       description: { type: String },
       content: { type: String },
       slug: { type: String },
-      image: { type: String },
+      logo: { type: String },
       created: { type: String },
+      hex: { type: String },
+      theme: { type: String },
+      icon: { type: String },
+      url: { type: String },
     };
   }
 
@@ -38,7 +46,6 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
     return [css`
 
         .wrapper{
-          height: 100%;
           width: 100%;
           display: inline-flex;
           flex-direction: column;
@@ -48,7 +55,7 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
           border-radius: var(--ddd-radius-xl);
           padding: var(--ddd-spacing-2); 
           text-decoration: none;
-          //box-sizing: border-box; 
+          background-color: var(--site-hex-code, --ddd-theme-accent);
         }
         .image {
         display: inline-block;
@@ -88,15 +95,60 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
 
   render() {
     return html`
-        <div class="wrapper">
+    <div class="wrapper" style="--site-hex-code: ${this.hex}">
+
+      <div class="logo" ?hidden="${this.logo === ''}">
+        ${this.logo ? html`<img src="${this.url}/${this.logo}" alt=''>` : ''}
+      </div>
+
+      <div class="text"> 
+        <div class="title" ?hidden="${this.title === ''}">
+          ${this.title !== '' ? html`<a href="${this.title}" target="_blank"></a>` : " "} 
+            <span class="icon" ?hidden="${this.icon === ''}">
+              <simple-icon icon="${this.icon}"></simple-icon>
+            </span> 
+            ${this.title}
+      </div>
+    </div>
+
+    <div ?hidden="${this.theme === ''}">
+      <div class="info">
+        <span class="label">Theme</span>
+        <span>: ${this.theme}</span>
+      </div>
+    </div>
+
+    <div ?hidden="${this.description === ''}">
+      <div class="info">
+        <span class="label">Description</span>
+        <span>: ${this.description}</span>
+      </div>
+    </div>
+
+    <div ?hidden="${this.created === ''}">
+      <div class="info">
+        <span class="label">Created</span>
+        <span>: ${this.created}</span>
+      </div>
+    </div>
+
+    <div ?hidden="${this.lastUpdated === ''}">
+      <div class="info">
+        <span class="label">Updated</span>
+        <span>: ${this.lastUpdated}</span>
+      </div>
+    </div>
+
+          </div>
+        <!-- <div class="wrapper">
          <img class="image" src="${this.url}/${this.logo}" alt="${this.title}"> 
             <a href="${this.slug}" target="_blank">${this.title} </a>
             <div id="update"> ${this.lastUpdated}</div> 
             <div id="description">${this.description}</div>
-            <!-- <a id="slug" href="${this.slug}" target="_blank"> slug</a> --> 
+             <a id="slug" href="${this.slug}" target="_blank"> slug</a> 
             <a id="source" href="${this.source}" target="_blank"> open source</a>
             <div id="create"> ${this.created}</div>
-        </div> 
+        </div> -->
     
         `;
   }

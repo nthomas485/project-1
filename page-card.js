@@ -19,6 +19,7 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
     this.lastUpdated = "";
     this.image = '';
     this.created = '';
+    this.url = '';
   }
 
   static get properties() {
@@ -31,6 +32,7 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
       slug: { type: String },
       image: { type: String },
       created: { type: String },
+      url: { type: String },
     };
   }
 
@@ -48,23 +50,28 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
           border-radius: var(--ddd-radius-xl);
           padding: var(--ddd-spacing-2); 
           text-decoration: none;
+          background-color: var(--ddd-theme-default-creekTeal);
+          cursor: pointer;
+          min-height: 360px;
           //box-sizing: border-box; 
+        }
+
+        .wrapper:hover{
+          transform: translateY(-30px);
+          box-shadow: 0px 5px 15px;
+
         }
         .image {
         display: inline-block;
+        height: 100%;
+        width: 100%;
         }
     
-        .image div {
-        max-width: 200px;
-        font-size: 16px;
-        font-weight: bold;
-        }
-    
-        .image img {
+        /*.image img {
         display: block;
         width: 240px;
         height: 240px;
-        }
+        }*/
         .secondaryCreator{
         display: inline-block;
       }
@@ -81,6 +88,9 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
         text-decoration: none;
         color: black;
       }
+      a::after {
+        content: '('attr(href)')';
+      }
     }
     
         `];
@@ -88,17 +98,24 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
 
   render() {
     return html`
-        <div class="wrapper">
-         <img class="image" src="${this.url}/${this.logo}" alt="${this.title}"> 
+    <!-- <a href="${this.slug}" target="_blank"> </a> -->
+        <div class="wrapper" @click="${()=> window.open(this.slug, '_blank')}">
+        ${this.image ? html`
+          <img class="image" src="${this.url}/${this.image}" alt="${this.title}"> `
+        : ""
+      } 
             <a href="${this.slug}" target="_blank">${this.title} </a>
             <div id="update"> ${this.lastUpdated}</div> 
             <div id="description">${this.description}</div>
             <!-- <a id="slug" href="${this.slug}" target="_blank"> slug</a> --> 
-            <a id="source" href="${this.source}" target="_blank"> open source</a>
+             <div ?hidden="${this.source === ''}">
+             <a id="source" href="${this.source}" target="_blank"> open source</a>
+             </div>
             <div id="create"> ${this.created}</div>
         </div> 
     
         `;
+        
   }
   static get tag() {
     return "page-card";

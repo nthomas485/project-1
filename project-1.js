@@ -5,7 +5,8 @@
 import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
-import "./page-card.js"
+import "./page-card.js";
+import "./card-overview.js";
 
 /**
  * `project-1`
@@ -25,6 +26,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.name = "";
     this.description = "";
     this.logo = "";
+    this.image = "";
     this.theme = "";
     this.created = "";
     this.lastUpdated = "";
@@ -32,6 +34,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.url = "";
     this.isValid = false;
     this.loading = false;
+    this.placeholder = "https://haxtheweb.org";
   }
 
   // Lit reactive properties
@@ -42,13 +45,15 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       name: { type: String },
       description: { type: String },
       logo: { type: String },
+      image: { type: String },
       theme: { type: String },
       created: { type: String },
       lastUpdate: { type: String },
       items: { type: Array },
-      loading: { type: Boolean, reflect: true},
+      loading: { type: Boolean, reflect: true },
       url: { type: String, attribute: 'json-url' },
-      isValid: { type: Boolean, reflect: true},
+      isValid: { type: Boolean, reflect: true },
+      placeholder: { type: String },
     };
   }
 
@@ -71,11 +76,22 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         padding: var(--ddd-spacing-2, 8px);
         color: var(--ddd-theme-default-white);
         font-size: var(--ddd-font-size-l);
+        text-align: center;
       }
       input {
         font-size: var(--ddd-font-size-20px, 20px);
         line-height: var(--ddd-lh-40, 40px);
         width: 100%;
+        text-align: center;
+      }
+      .dropdowns{
+        text-align: center;
+      }
+      .search-inputs{
+        text-align: center;
+      }
+      details{
+        margin-left: 100px;
       }
       button{
         display: inline-block;
@@ -85,6 +101,12 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
       button:hover{
         color: fuchsia;
       }
+      .card-output{ 
+        background-color: var(--ddd-theme-default-limestoneGray);
+      }
+      .overview{
+        text-align: center;
+      }
     `];
   }
 
@@ -92,37 +114,50 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
 <div class="wrapper">
+  <div class="drop-downs">
   <h3>${this.title}</h3>
   <details open>
       <summary>Enter Site URL</summary>
-      <div class="inputs">
-        <input type="text" id="text-box" placeholder="https://haxtheweb.org" @input="${this.inputChanged}" @keydown="${(e) => {if(e.key === 'Enter'){this.updateResults();}}}"/>
+      <div class="search-inputs">
+        <input type="text" id="text-box"  placeholder="${this.placeholder}" @input="${this.inputChanged}" />
         <button title="Analyze" id="analyze" @click="${this.updateResults}">Analyze</button>
       </div>
     </details>
-    <div class="output">
+    </div>
+    <div class="overview">
+      ${this.url}
+   <card-overview
+    url="${this.url}"
+    title="${this.title}"
+    description="${this.description}"
+    logo="${this.logo}"
+    created="${this.created}"
+    lastUpdated="${this.lastUpdated}"
+    hex="${this.hex}"
+    theme="${this.theme}"
+    icon="${this.icon}"
+   ></card-overview> 
+   </div>
+    <div class="card-output">
       ${this.items.map((item, index) => {
-        const img = item.metadata && item.metadata.files && item.metadata.files[0] ? `https://haxtheweb.org/${item.metadata.files.url}` : '';
-        return html`
+      return html`
           <page-card
+          url="${this.url}"
           title="${item.title}"
-          logo= "${img}"
+          image="${item.metadata.images[0]}"
           lastUpdated="Updated: ${this.dated(item.metadata.updated)}"
           description="${item.description}"
-          slug="https://haxtheweb.org/${item.slug}"
-          source="https://haxtheweb.org/${item.location}"
-          created= "created: ${this.dated(item.metadata.created)}"
+          slug="${this.url}/${item.slug}"
+          source="${this.url}/${item.location}"
+          created="created: ${this.dated(item.metadata.created)}"
           ></page-card>
         `})}
     </div> 
-    <div class="overview">
-      
-    </div>
 </div>`;
   }
 
-  dated(value){
-    var date = new Date(value * 1000);
+  dated(input) {
+    var date = new Date(input * 1000);
     return (date.toUTCString());
   }
 
@@ -136,16 +171,18 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     } 
   } */
 
-    hasImage(item) {
-      let image = item.metadata.images;
-      if (image) {
-        if(image.length > 0) {
-          return (this.url + image[0])
-        }
-      } else {
-        return '';
-      }
+  getDomain() {
+
+    try {
+      const parsedUrl = new URL(this.value);
+      this.url = `${parsedUrl.protocol}//${parsedUrl.host}/`;
+      console.log(this.url)
+    } catch (error) {
+      console.error("Invalid URL:", error);
+      return null;
     }
+  }
+
   updated(changedProperties) {
 
     // see if value changes from user input and is not empty
@@ -154,7 +191,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     } else if (changedProperties.has('value') && !this.value) {
       this.items = []
     }
-    if (changedProperties.has('items') && this.items.length > 0 ) {
+    if (changedProperties.has('items') && this.items.length > 0) {
       console.log(this.items);
     }
 
@@ -163,15 +200,25 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     //const json =  `${this.url}site.json`;
     this.value = this.shadowRoot.querySelector('#text-box').value;
     this.loading = true;
-    if (!this.value.startsWith('https://') && (!this.value.endsWith('/site.json'))) {
-      this.value = 'https://'+this.value+'/site.json'
-    } else if (!this.value.startsWith('https://')){
-      this.value = 'https://'+this.value
-    } else if (!this.value.endsWith('/site.json')){
-      this.value += '/site.json'
+    if (!this.value.endsWith('/site.json')) {
+      console.log("hi")
+      this.value = `${this.value}/site.json`
     }
+    if (!this.value.startsWith('https://')) {
+      this.value = `https://${this.value}`
+    }
+    this.url = this.value.substring(0, this.value.indexOf("site.json"))
+    console.log(this.url)
+    // this.url = this.getDomain()
     fetch(this.value).then(response => response.ok ? response.json() : {}).then(data => {//fetch(this.value).then(d => d.ok ? d.json() : {}).then(data => {
-
+      this.title = data.title
+      this.description = data.description
+      this.logo = data.metadata.site.logo
+      this.created = this.dated(data.metadata.site.created)
+      this.lastUpdated = this.dated(data.metadata.site.updated)
+      this.hex = data.metadata.theme.variables.hexCode
+      this.theme = data.metadata.theme.name
+      this.icon = data.metadata.theme.variables.icon
       this.items = [...data.items];
       this.loading = false;
       this.requestUpdate();
