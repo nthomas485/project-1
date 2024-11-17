@@ -7,6 +7,7 @@ import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
 import "./page-card.js";
 import "./card-overview.js";
+import { pageCard } from "./page-card.js";
 
 /**
  * `project-1`
@@ -23,6 +24,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   constructor() {
     super();
     this.title = "";
+    this.mainTitle = "HAX Search";
     this.name = "";
     this.description = "";
     this.logo = "";
@@ -34,7 +36,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.url = "";
     this.isValid = false;
     this.loading = false;
-    this.placeholder = "https://haxtheweb.org";
+    this.placeholder = "haxtheweb.org";
   }
 
   // Lit reactive properties
@@ -42,6 +44,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     return {
       ...super.properties,
       title: { type: String },
+      mainTitle: { type: String },
       name: { type: String },
       description: { type: String },
       logo: { type: String },
@@ -84,14 +87,17 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         width: 100%;
         text-align: center;
       }
-      .dropdowns{
+      .main-title{
+        text-align: center;
+      }
+      .drop-downs{
         text-align: center;
       }
       .search-inputs{
         text-align: center;
       }
       details{
-        margin-left: 100px;
+        margin-left: 375px;
       }
       button{
         display: inline-block;
@@ -99,33 +105,41 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
         width: 100%;
       }
       button:hover{
-        color: fuchsia;
+        color: var(--ddd-theme-default-athertonViolet);
       }
       .card-output{ 
-        background-color: var(--ddd-theme-default-limestoneGray);
+        background-color: var(--ddd-theme-default-black);
       }
       .overview{
+        display: hidden;
+        position: relative;
         text-align: center;
+        //height: 190px;
+        //max-height: 560px;
       }
     `];
   }
 
   // Lit render the HTML
   render() {
+    if (this.shadowRoot.querySelector('#text-box') === ''){
+      
+    }
     return html`
 <div class="wrapper">
   <div class="drop-downs">
-  <h3>${this.title}</h3>
+    <div class="main-title" >
+    <h3>${this.mainTitle}</h3>
+    </div>
   <details open>
       <summary>Enter Site URL</summary>
       <div class="search-inputs">
-        <input type="text" id="text-box"  placeholder="${this.placeholder}" @input="${this.inputChanged}" />
+        <input type="text" id="text-box"  placeholder="${this.placeholder}" @input="${this.inputChanged}" @keydown="${(e) => {if(e.key == 'Enter'){this.updateResults();}}}" />
         <button title="Analyze" id="analyze" @click="${this.updateResults}">Analyze</button>
       </div>
     </details>
     </div>
-    <div class="overview">
-      ${this.url}
+    ${this.value ? html`<div class="overview">
    <card-overview
     url="${this.url}"
     title="${this.title}"
@@ -137,22 +151,24 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     theme="${this.theme}"
     icon="${this.icon}"
    ></card-overview> 
-   </div>
-    <div class="card-output">
-      ${this.items.map((item, index) => {
+   </div>` : ''}
+
+   ${this.value ? html`<div class="card-output">
+      ${this.items.map((item) => {
+      const imageUrl = item.metadata?.images?.[0] || '';
       return html`
           <page-card
           url="${this.url}"
           title="${item.title}"
-          image="${item.metadata.images[0]}"
+          image="${imageUrl}"
           lastUpdated="Updated: ${this.dated(item.metadata.updated)}"
           description="${item.description}"
-          slug="${this.url}/${item.slug}"
-          source="${this.url}/${item.location}"
+          slug="${this.url}${item.slug}"
+          source="${this.url}${item.location}"
           created="created: ${this.dated(item.metadata.created)}"
           ></page-card>
         `})}
-    </div> 
+    </div> ` : ''}
 </div>`;
   }
 
@@ -162,14 +178,9 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
   }
 
   inputChanged(e) {
-    this.value = this.shadowRoot.querySelector('#analyze').value;
+    //this.value = this.shadowRoot.querySelector('#analyze').value;
+    this.value = e.target.value;
   }
-  /*Valid(input) {
-    if (!this.url.has('/site.json')) {
-      this.url += '/site.json'
-      this.isValid = true
-    } 
-  } */
 
   getDomain() {
 
@@ -201,14 +212,15 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
     this.value = this.shadowRoot.querySelector('#text-box').value;
     this.loading = true;
     if (!this.value.endsWith('/site.json')) {
-      console.log("hi")
-      this.value = `${this.value}/site.json`
+      this.value += '/site.json';
     }
     if (!this.value.startsWith('https://')) {
-      this.value = `https://${this.value}`
+      this.value = `https://${this.value}`;
     }
+    this.url = this.getDomain(this.value);
+    console.log(`Updated url: ${this.value}`)
     this.url = this.value.substring(0, this.value.indexOf("site.json"))
-    console.log(this.url)
+    //console.log(this.url)
     // this.url = this.getDomain()
     fetch(this.value).then(response => response.ok ? response.json() : {}).then(data => {//fetch(this.value).then(d => d.ok ? d.json() : {}).then(data => {
       this.title = data.title

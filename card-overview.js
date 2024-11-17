@@ -47,19 +47,27 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
 
         .wrapper{
           width: 100%;
-          display: inline-flex;
+          display: flex;
+          justify-content: center;
           flex-direction: column;
+          margin-left: -12px;
           align-items: center;
-          max-width: 312px;
+          //max-height: 360px;
           border:var(--ddd-border-lg);
-          border-radius: var(--ddd-radius-xl);
+          border-radius: var(--ddd-radius-m);
           padding: var(--ddd-spacing-2); 
           text-decoration: none;
           background-color: var(--site-hex-code, --ddd-theme-accent);
+          margin-bottom: var(--ddd-spacing-2);
         }
-        .image {
-        display: inline-block;
-        }
+         .logo {
+        display: flex; /* Center logo content */
+        justify-content: center;
+        align-items: center;
+        max-width: 560px; /* Match image size */
+        max-height: 260px; /* Match image size */
+        overflow: hidden; /* Ensure images don't overflow */
+        } 
     
         .image div {
         max-width: 200px;
@@ -67,10 +75,17 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
         font-weight: bold;
         }
     
-        .image img {
-        display: block;
-        width: 240px;
-        height: 240px;
+        .logo img {
+          width: 100%; /* Scale to fit container */
+          height: auto; /* Maintain aspect ratio */
+          object-fit: cover; /* Ensure consistent cropping */
+        }
+        .title{
+          font-size: 35px;
+          color: black;
+        }
+        .info{
+          color: black;
         }
         .secondaryCreator{
         display: inline-block;

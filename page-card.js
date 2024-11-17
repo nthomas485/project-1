@@ -44,15 +44,19 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
           width: 100%;
           display: inline-flex;
           flex-direction: column;
+          margin-left: 10px;
+          margin-top: 10px;
+          gap: 16px;
           align-items: center;
           max-width: 312px;
-          border:var(--ddd-border-lg);
-          border-radius: var(--ddd-radius-xl);
-          padding: var(--ddd-spacing-2); 
+          border:var(--ddd-border-sm);
+          border-radius: var(--ddd-radius-m);
+          padding: var(--ddd-spacing-3); 
           text-decoration: none;
-          background-color: var(--ddd-theme-default-creekTeal);
+          background-color: var(--ddd-theme-default-gradient-footer);
           cursor: pointer;
-          min-height: 360px;
+          height: 494px;
+          overflow: hidden;
           //box-sizing: border-box; 
         }
 
@@ -66,30 +70,29 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
         height: 100%;
         width: 100%;
         }
-    
-        /*.image img {
-        display: block;
-        width: 240px;
-        height: 240px;
-        }*/
+
+        .title {
+          font-size: 30px;
+        }
         .secondaryCreator{
         display: inline-block;
       }
       a{
         text-decoration: none;
+        color: var(--ddd-theme-default-skyBlue);
       }
       a:hover{
         text-decoration: none;
-        color: fuchsia;
+        color: var(--ddd-theme-default-athertonViolet);
       }
+      /* a::after {
+        content: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==';
+      } */
       a:visited{
         text-decoration: none;
       a:active{
         text-decoration: none;
         color: black;
-      }
-      a::after {
-        content: '('attr(href)')';
       }
     }
     
@@ -99,17 +102,17 @@ export class pageCard extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
     <!-- <a href="${this.slug}" target="_blank"> </a> -->
-        <div class="wrapper" @click="${()=> window.open(this.slug, '_blank')}">
-        ${this.image ? html`
+        <div class="wrapper" @click="${()=> window.open(this.slug, '_blank')}" >
+            <a class="title" href="${this.slug}" target="_blank">${this.title} </a>
+            ${this.image ? html`
           <img class="image" src="${this.url}/${this.image}" alt="${this.title}"> `
         : ""
       } 
-            <a href="${this.slug}" target="_blank">${this.title} </a>
             <div id="update"> ${this.lastUpdated}</div> 
             <div id="description">${this.description}</div>
             <!-- <a id="slug" href="${this.slug}" target="_blank"> slug</a> --> 
              <div ?hidden="${this.source === ''}">
-             <a id="source" href="${this.source}" target="_blank"> open source</a>
+             <a class="source" href="${this.source}" @click="${e => e.stopPropagation()}" target="_blank"> open source</a>
              </div>
             <div id="create"> ${this.created}</div>
         </div> 
