@@ -165,7 +165,7 @@ export class project1 extends DDDSuper(I18NMixin(LitElement)) {
           description="${item.description}"
           slug="${this.url}${item.slug}"
           source="${this.url}${item.location}"
-          created="created: ${this.dated(item.metadata.created)}"
+          created="Created: ${this.dated(item.metadata.created)}"
           ></page-card>
         `})}
     </div> ` : ''}

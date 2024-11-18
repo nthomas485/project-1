@@ -61,12 +61,12 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
           margin-bottom: var(--ddd-spacing-2);
         }
          .logo {
-        display: flex; /* Center logo content */
+        display: flex; 
         justify-content: center;
         align-items: center;
-        max-width: 560px; /* Match image size */
-        max-height: 260px; /* Match image size */
-        overflow: hidden; /* Ensure images don't overflow */
+        max-width: 560px; 
+        max-height: 260px; 
+        overflow: hidden; 
         } 
     
         .image div {
@@ -76,9 +76,9 @@ export class cardOverview extends DDDSuper(I18NMixin(LitElement)) {
         }
     
         .logo img {
-          width: 100%; /* Scale to fit container */
-          height: auto; /* Maintain aspect ratio */
-          object-fit: cover; /* Ensure consistent cropping */
+          width: 100%; 
+          height: auto;
+          object-fit: cover; 
         }
         .title{
           font-size: 35px;
